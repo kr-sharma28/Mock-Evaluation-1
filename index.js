@@ -195,3 +195,32 @@ cron.schedule('* * * * *', async () => {
   console.log(`High Priority Tasks: ${highPriorityTasks}`);
   console.log(`Pending Tasks: ${pendingTasks}`);
 });
+
+
+//server.js
+
+let express = require('express');
+let mongoose = require('mongoose');
+let dotenv = require('dotenv');
+let authRoutes = require('./routes/authRoutes');
+let taskRoutes = require('./routes/taskRoutes');
+let categoryRoutes = require('./routes/categoryRoutes');
+let cronJob = require('./utils/cronJob');
+let app = express();
+
+dotenv.config();
+
+app.use(express.json());
+
+mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('MongoDB connected'))
+  .catch((err) => console.log(err));
+
+app.use('/api/auth', authRoutes);
+app.use('/api/tasks', taskRoutes);
+app.use('/api/categories', categoryRoutes);
+
+let PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
